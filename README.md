@@ -1,8 +1,4 @@
-Here is your **clean, final `README.md`** for AXIOM (ready to copy-paste into GitHub):
 
----
-
-````md
 # 🧠 Axiom Planner – Intelligent Academic Scheduler
 
 Axiom Planner is an AI-powered academic management system designed to help students efficiently handle assignments, exams, and study planning. It intelligently distributes workload, reduces stress, and improves productivity using structured scheduling and AI-based assistance.
