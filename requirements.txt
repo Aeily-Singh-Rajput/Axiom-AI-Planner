@@ -1,0 +1,9 @@
+flask==3.0.3
+pandas==2.2.2
+numpy==1.26.4
+matplotlib==3.9.0
+PyPDF2==3.0.1
+requests==2.32.3
+torch
+transformers
+google-genai

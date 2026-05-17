@@ -1,0 +1,2105 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>{% block title %}Axiom AI Planner{% endblock %}</title>
+
+  <script>
+    (function () {
+      const activePreference = localStorage.getItem('axiom-theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      if (activePreference === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      } else {
+        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-bright": "#fff8f5",
+            "on-error": "#ffffff",
+            "on-primary-fixed-variant": "#59422c",
+            "outline-variant": "#d2c4ba",
+            "background": "#fff8f5",
+            "on-error-container": "#93000a",
+            "error": "#ba1a1a",
+            "on-tertiary-container": "#91a7b1",
+            "on-primary-fixed": "#291806",
+            "on-secondary-fixed-variant": "#5f4100",
+            "on-tertiary-fixed-variant": "#354a52",
+            "error-container": "#ffdad6",
+            "on-primary-container": "#bd9f83",
+            "surface-dim": "#e0d9d5",
+            "surface": "#fff8f5",
+            "primary-fixed": "#fedcbe",
+            "on-primary": "#ffffff",
+            "primary-container": "#4b3621",
+            "primary": "#33210d",
+            "tertiary-fixed-dim": "#b3cad4",
+            "surface-container-high": "#eee7e3",
+            "surface-variant": "#e8e1dd",
+            "primary-fixed-dim": "#e1c1a4",
+            "on-tertiary": "#ffffff",
+            "on-surface": "#1e1b19",
+            "on-background": "#1e1b19",
+            "on-secondary": "#ffffff",
+            "on-surface-variant": "#4e453d",
+            "surface-container-lowest": "#ffffff",
+            "inverse-surface": "#33302d",
+            "tertiary-fixed": "#cfe6f0",
+            "surface-container": "#f4ece9",
+            "secondary-container": "#fdbe49",
+            "on-secondary-fixed": "#271900",
+            "surface-container-highest": "#e8e1dd",
+            "outline": "#80756c",
+            "inverse-on-surface": "#f7efeb",
+            "inverse-primary": "#e1c1a4",
+            "secondary-fixed": "#ffdeab",
+            "on-secondary-container": "#704e00",
+            "surface-container-low": "#faf2ee",
+            "secondary": "#7d5700",
+            "tertiary-container": "#283d45",
+            "surface-tint": "#725a42",
+            "secondary-fixed-dim": "#fabc46",
+            "tertiary": "#12272f",
+            "on-tertiary-fixed": "#071e26"
+          },
+          spacing: {
+            xs: "4px", gutter: "24px", md: "16px", unit: "4px", xl: "40px", "container-max": "1140px", sm: "8px", lg: "24px"
+          },
+          fontFamily: {
+            "display-lg": ["Libre Caslon Text"], "label-sm": ["Work Sans"], "body-md": ["Work Sans"], "headline-md": ["Libre Caslon Text"], "body-lg": ["Work Sans"], "headline-lg": ["Libre Caslon Text"]
+          },
+          fontSize: {
+            "display-lg": ["48px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "label-sm": ["13px", { lineHeight: "1.4", letterSpacing: "0.05em", fontWeight: "500" }],
+            "body-md": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+            "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+            "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+            "headline-lg": ["32px", { lineHeight: "1.2", fontWeight: "600" }]
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-gutter: stable;
+    }
+
+    body {
+      background: var(--bg-global, #fff8f5);
+      overflow-x: hidden;
+      font-family: 'Work Sans', sans-serif;
+      transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .form-input-focus:focus {
+      outline: none;
+      border-color: #773F1A;
+      box-shadow: 0 0 0 1px #773F1A;
+    }
+
+    html.dark .form-input-focus:focus {
+      border-color: #5a73a3;
+      box-shadow: 0 0 0 1px #5a73a3;
+    }
+
+    /* =======================================================
+CINEMATIC DARK ACADEMIA SELECTOR SYSTEM
+   ======================================================= */
+    html {
+      --bg-global: #fff8f5;
+    }
+
+    html.dark {
+      --bg-global: #111827;
+      --tw-bg-opacity: 1 !important;
+      --tw-text-opacity: 1 !important;
+
+      /* Background Elements overrides matching requested aesthetic */
+      .bg-background {
+        background-color: #111827 !important;
+      }
+
+      .bg-surface {
+        background-color: #16181d !important;
+      }
+
+      .bg-surface-container-low {
+        background-color: #1b1b1b !important;
+      }
+
+      .bg-surface-container-high,
+      .bg-surface-container-highest {
+        background-color: #20232a !important;
+      }
+
+      .bg-surface-bright {
+        background-color: #1e293b !important;
+      }
+
+      .bg-surface-container-lowest {
+        background-color: #111827 !important;
+      }
+
+      /* Header */
+      header {
+        background-color: rgba(22, 24, 29, 0.85) !important;
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+      }
+
+      /* Sidebar and panels */
+      #sidebar,
+      #calendar-panel {
+        background-color: #20232a !important;
+        border-color: rgba(255, 255, 255, 0.05) !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Cards */
+      .bg-surface-container-low,
+      .bg-surface-container-high,
+      .bg-surface,
+      .bg-surface-bright {
+        background-color: #2a2d35 !important;
+        border-color: rgba(255, 255, 255, 0.05) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+      }
+
+      /* Override washed-out transparent backgrounds used in alerts/stress cards */
+      .bg-surface\/50 {
+        background-color: #2f3440 !important;
+      }
+
+      /* Text Component Color overrides */
+      .text-primary {
+        color: #f3f4f6 !important;
+      }
+
+      .text-on-background {
+        color: #f3f4f6 !important;
+      }
+
+      .text-on-surface {
+        color: #cbd5e1 !important;
+      }
+
+      .text-on-surface-variant {
+        color: #94a3b8 !important;
+      }
+
+      .text-outline {
+        color: #475569 !important;
+      }
+
+      .text-secondary {
+        color: #8b5cf6 !important;
+      }
+
+      /* Delicate Borders */
+      .border-outline-variant\/10 {
+        border-color: rgba(255, 255, 255, 0.05) !important;
+      }
+
+      .border-outline-variant\/20 {
+        border-color: rgba(255, 255, 255, 0.05) !important;
+      }
+
+      .border-outline-variant\/30 {
+        border-color: rgba(255, 255, 255, 0.1) !important;
+      }
+
+      .border-outline-variant {
+        border-color: rgba(255, 255, 255, 0.1) !important;
+      }
+
+      /* Interactive form element states in dark mode */
+      input,
+      select,
+      textarea {
+        background-color: #20232a !important;
+        color: #f5f5f5 !important;
+        border-color: rgba(255, 255, 255, 0.05) !important;
+        transition: all 0.3s ease;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: #8b5cf6 !important;
+        box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.5) !important;
+      }
+
+      /* Navigation & Hover States */
+      .hover\:bg-surface-container-highest:hover {
+        background-color: #2f3440 !important;
+        color: #f5f5f5 !important;
+      }
+
+      .hover\:text-secondary:hover {
+        color: #8b5cf6 !important;
+      }
+
+      .bg-secondary-container {
+        background-color: rgba(139, 92, 246, 0.15) !important;
+      }
+
+      .text-on-secondary-container {
+        color: #8b5cf6 !important;
+      }
+
+      /* Header active state borders */
+      .border-secondary {
+        border-color: #8b5cf6 !important;
+      }
+
+      /* Accent buttons / primary actions */
+      .bg-primary {
+        background-color: #8b5cf6 !important;
+        color: white !important;
+      }
+
+      .bg-primary:hover {
+        background-color: #7c3aed !important;
+      }
+
+      /* Footer */
+      footer {
+        background-color: #111827 !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+      }
+
+      /* Calendar specific overrides */
+      .calendar-cell {
+        background-color: #2a2d35 !important;
+        border-color: rgba(255, 255, 255, 0.05) !important;
+      }
+
+      .calendar-cell.assignment {
+        background-color: rgba(139, 92, 246, 0.15) !important;
+        color: #d8b4fe !important;
+      }
+
+      .calendar-cell.exam {
+        background-color: rgba(51, 65, 85, 0.4) !important;
+        color: #cbd5e1 !important;
+      }
+
+      .bg-primary-container {
+        background-color: #475569 !important;
+      }
+    }
+
+    /* =======================================================
+CINEMATIC PREMIUM TOGGLE ARTWORK ENGINE
+======================================================= */
+
+    .premium-artwork-toggle{
+
+        position:relative;
+
+        width:118px;
+        height:52px;
+
+        border-radius:999px;
+
+        overflow:hidden;
+
+        cursor:pointer;
+
+        margin-left:32px;
+        margin-right:8 ;
+
+        flex-shrink: 0;
+
+        transform:scale(0.88);
+
+        border:
+        1px solid rgba(255,255,255,0.08);
+
+        transition:
+        all 0.7s ease;
+
+        backdrop-filter:blur(18px);
+
+        box-shadow:
+        0 10px 30px rgba(0,0,0,0.14),
+        inset 0 1px 2px rgba(255,255,255,0.3);
+
+    }
+
+    .premium-artwork-toggle:hover{
+
+        transform:scale(0.88);
+
+    }
+
+    /* =========================================================
+SKY
+    ========================================================= */
+
+    .toggle-sky{
+
+        position:absolute;
+        inset:0;
+
+        transition:
+        opacity 0.8s ease;
+
+    }
+
+    /* DAY */
+
+    .day-sky{
+
+        background:
+        linear-gradient(
+        to bottom,
+        #e8d9c7,
+        #f3e5d5,
+        #fff5e8
+        );
+
+        opacity:1;
+
+    }
+
+    /* NIGHT */
+
+    .night-sky{
+
+        background:
+        linear-gradient(
+        to bottom,
+        #141c2c,
+        #1f2937,
+        #2d3c50
+        );
+
+        opacity:0;
+
+    }
+
+    html.dark .day-sky{
+
+        opacity:0;
+
+    }
+
+    html.dark .night-sky{
+
+        opacity:1;
+
+    }
+
+    /* =========================================================
+STARS
+    ========================================================= */
+
+    .stars-layer{
+
+        position:absolute;
+        inset:0;
+
+        opacity:0;
+
+        transition:
+        opacity 0.7s ease;
+
+    }
+
+    html.dark .stars-layer{
+
+        opacity:1;
+
+    }
+
+    .star{
+
+        position:absolute;
+
+        width:2px;
+        height:2px;
+
+        border-radius:50%;
+
+        background:white;
+
+        box-shadow:
+        0 0 5px rgba(255,255,255,0.9);
+
+        animation:
+        twinkle 2.4s infinite alternate;
+
+    }
+
+    .s1{top:12px; left:18px;}
+    .s2{top:18px; left:45px;}
+    .s3{top:10px; right:22px;}
+    .s4{top:24px; right:50px;}
+    .s5{top:16px; left:82px;}
+
+    @keyframes twinkle{
+
+        from{
+            opacity:0.4;
+        }
+
+        to{
+            opacity:1;
+        }
+
+    }
+
+    /* =========================================================
+CLOUDS
+    ========================================================= */
+
+    .cloud{
+
+        position:absolute;
+
+        width:34px;
+        height:10px;
+
+        border-radius:999px;
+
+        background:
+        rgba(255,255,255,0.7);
+
+        transition:
+        opacity 0.7s ease;
+
+    }
+
+    .cloud::before,
+    .cloud::after{
+
+        content:"";
+
+        position:absolute;
+
+        border-radius:50%;
+
+        background:
+        rgba(255,255,255,0.7);
+
+    }
+
+    .cloud::before{
+
+        width:14px;
+        height:14px;
+
+        top:-6px;
+        left:4px;
+
+    }
+
+    .cloud::after{
+
+        width:18px;
+        height:18px;
+
+        top:-8px;
+        right:4px;
+
+    }
+
+    .cloud-1{
+
+        top:10px;
+        left:18px;
+
+    }
+
+    .cloud-2{
+
+        top:18px;
+        right:16px;
+
+    }
+
+    html.dark .cloud{
+
+        opacity:0;
+
+    }
+
+    /* =========================================================
+SUN / MOON
+    ========================================================= */
+
+    .celestial-wrapper{
+
+        position:absolute;
+
+        top:10px;
+        left:14px;
+
+        width:18px;
+        height:18px;
+
+        z-index:15;
+
+        transition:
+        transform 0.8s cubic-bezier(.34,1.56,.64,1);
+
+    }
+
+    html.dark .celestial-wrapper{
+
+        transform:translateX(72px);
+
+    }
+
+    /* SUN */
+
+    .sun{
+
+        position:absolute;
+
+        width:18px;
+        height:18px;
+
+        border-radius:50%;
+
+        background:#d98a4e;
+
+        box-shadow:
+        0 0 12px rgba(217,138,78,0.6);
+
+        transition:
+        all 0.7s ease;
+
+    }
+
+    html.dark .sun{
+
+        opacity:0;
+        transform:scale(0.4);
+
+    }
+
+    /* MOON */
+
+    .moon{
+
+        position:absolute;
+
+        width:16px;
+        height:16px;
+
+        border-radius:50%;
+
+        box-shadow:
+        -4px 3px 0 0 #f6ead4;
+
+        opacity:0;
+
+        transform:
+        scale(0.4)
+        rotate(45deg);
+
+        transition:
+        all 0.7s ease;
+
+    }
+
+    html.dark .moon{
+
+        opacity:1;
+
+        transform:
+        scale(1)
+        rotate(0deg);
+
+    }
+
+    /* =========================================================
+BACKGROUND STRUCTURES
+    ========================================================= */
+
+    .background-layer{
+
+        position:absolute;
+
+        bottom:16px;
+        left:0;
+
+        width:100%;
+        height:16px;
+
+        background:#8f7f70;
+
+        opacity:0.25;
+
+        clip-path:
+        polygon(
+        0% 100%,
+        0% 55%,
+        10% 55%,
+        10% 30%,
+        22% 30%,
+        22% 65%,
+        40% 65%,
+        40% 20%,
+        55% 20%,
+        55% 70%,
+        75% 70%,
+        75% 25%,
+        88% 25%,
+        88% 60%,
+        100% 60%,
+        100% 100%
+        );
+
+        transition:
+        all 0.7s ease;
+
+    }
+
+    html.dark .background-layer{
+
+        background:#435267;
+
+        opacity:0.38;
+
+    }
+
+    /* =========================================================
+GROUND
+    ========================================================= */
+
+    .ground{
+
+        position:absolute;
+
+        bottom:0;
+        left:0;
+
+        width:100%;
+        height:18px;
+
+        background:#5d4d42;
+
+        transition:
+        background 0.7s ease;
+
+    }
+
+    html.dark .ground{
+
+        background:#1a2432;
+
+    }
+
+    /* =========================================================
+STREET LIGHT
+    ========================================================= */
+
+    .lamp-post{
+
+        position:absolute;
+
+        bottom:18px;
+        left:50%;
+
+        transform:translateX(-50%);
+
+        width:4px;
+        height:34px;
+
+        background:#2f241c;
+
+        z-index:20;
+
+    }
+
+    html.dark .lamp-post{
+
+        background:#0b1017;
+
+    }
+
+    /* HEAD */
+
+    .lamp-head{
+
+        position:absolute;
+
+        top:-18px;
+        left:-9px;
+
+        width:22px;
+        height:28px;
+
+        z-index:30;
+
+    }
+
+    /* =========================================
+VICTORIAN GAS LAMP
+========================================= */
+
+.lamp-bell{
+
+    position:absolute;
+
+    top:0;
+    left:1px;
+
+    width:20px;
+    height:8px;
+
+    background:#3b2d22;
+
+    border-radius:
+    12px 12px 3px 3px;
+
+}
+
+html.dark .lamp-bell{
+
+    background:#2f3948;
+
+}
+
+/* Glass Chamber */
+
+.lamp-glass{
+
+    position:absolute;
+
+    top:6px;
+    left:3px;
+
+    width:16px;
+    height:16px;
+
+    background:
+    linear-gradient(
+      to bottom,
+      rgba(255,245,220,0.9),
+      rgba(255,220,160,0.5)
+    );
+
+    border:
+    1px solid rgba(255,255,255,0.15);
+
+    clip-path:
+    polygon(
+      18% 0%,
+      82% 0%,
+      100% 100%,
+      0% 100%
+    );
+
+    backdrop-filter:blur(2px);
+
+}
+
+html.dark .lamp-glass{
+
+    background:
+    linear-gradient(
+      to bottom,
+      rgba(255,236,180,0.95),
+      rgba(255,210,120,0.65)
+    );
+
+    box-shadow:
+    0 0 12px rgba(255,215,120,0.9),
+    0 0 22px rgba(255,190,90,0.7);
+
+}
+
+/* Top Crown */
+
+.lamp-crown{
+
+    position:absolute;
+
+    top:-4px;
+    left:7px;
+
+    width:6px;
+    height:5px;
+
+    border-radius:2px;
+
+    background:#2a2018;
+
+}
+
+html.dark .lamp-crown{
+
+    background:#1b2432;
+
+}
+
+    html.dark .lamp-head{
+
+        background:#2b3545;
+
+    }
+
+    /* BULB */
+
+    .lamp-bulb{
+
+        position:absolute;
+
+        bottom:1px;
+        left:3px;
+
+        width:8px;
+        height:7px;
+
+        border-radius:3px;
+
+        background:#fff5e3;
+
+        transition:
+        all 0.7s ease;
+
+    }
+
+    html.dark .lamp-bulb{
+
+        background:#ffe9ae;
+
+        box-shadow:
+        0 0 10px rgba(255,225,160,0.9),
+        0 0 18px rgba(255,200,90,0.8);
+
+    }
+
+    /* =========================================================
+REALISTIC LIGHT CONE
+    ========================================================= */
+
+    .lamp-light-cone{
+
+    position:absolute;
+
+    top:18px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:56px;
+    height:42px;
+
+    background:
+    linear-gradient(
+      to bottom,
+      rgba(255,225,140,0.52),
+      rgba(255,210,120,0.18),
+      transparent
+    );
+
+    clip-path:
+    polygon(
+      47% 0%,
+      53% 0%,
+      100% 100%,
+      0% 100%
+    );
+
+    filter:blur(2px);
+
+    opacity:0;
+
+    transition:opacity 0.7s ease;
+
+}
+
+html.dark .lamp-light-cone{
+
+    opacity:1;
+
+}
+
+    /* =========================================================
+  GROUND LIGHT (NEW)
+    ========================================================= */
+
+    .ground-light{
+
+        position:absolute;
+
+        bottom:-18px;
+        left:50%;
+
+        transform:translateX(-50%);
+
+        width:82px;
+        height:22px;
+
+        border-radius:50%;
+
+        background:
+        radial-gradient(
+        ellipse at center,
+        rgba(255,224,150,0.45) 0%,
+        rgba(255,210,120,0.22) 45%,
+        transparent 75%
+        );
+
+        filter:blur(3px);
+
+        opacity:0;
+
+        transition:
+        opacity 0.7s ease;
+
+    }
+
+    html.dark .ground-light{
+
+        opacity:1;
+
+    }
+
+    /* =========================================================
+       BENCH
+    ========================================================= */
+
+    .bench{
+
+        position:absolute;
+
+        bottom:16px;
+        left:50%;
+
+        transform:
+        translateX(-50%)
+        translateX(18px);
+
+        width:30px;
+        height:12px;
+
+        z-index:25;
+
+    }
+
+    /* BENCH BACK */
+
+    .bench-back{
+
+        position:absolute;
+
+        top:0;
+
+        width:100%;
+        height:2px;
+
+        border-radius:2px;
+
+        background:#4b3d31;
+
+        box-shadow:
+        0 4px 0 #4b3d31;
+
+    }
+
+    html.dark .bench-back{
+
+        background:#324050;
+
+        box-shadow:
+        0 4px 0 #324050;
+
+    }
+
+    /* BENCH SEAT */
+
+    .bench-seat{
+
+        position:absolute;
+
+        top:6px;
+
+        width:100%;
+        height:2px;
+
+        border-radius:2px;
+
+        background:#4b3d31;
+
+    }
+
+    html.dark .bench-seat{
+
+        background:#324050;
+
+    }
+
+    /* LEGS */
+
+    .bench-leg{
+
+        position:absolute;
+
+        width:2px;
+        height:6px;
+
+        background:#2b221c;
+
+        bottom:-4px;
+
+    }
+
+    html.dark .bench-leg{
+
+        background:#0c131d;
+
+    }
+
+    .bench-leg.left{
+
+        left:4px;
+
+    }
+
+    .bench-leg.right{
+
+        right:4px;
+
+    }
+
+    /* =========================================================
+       BENCH LIGHT (NEW)
+    ========================================================= */
+
+    .bench-light{
+
+        position:absolute;
+
+        top:-10px;
+        left:-8px;
+
+        width:50px;
+        height:28px;
+
+        background:
+        radial-gradient(
+        ellipse at center,
+        rgba(255,220,140,0.22),
+        transparent 72%
+        );
+
+        filter:blur(5px);
+
+        opacity:0;
+
+        transition:
+        opacity 0.7s ease;
+
+    }
+
+    html.dark .bench-light{
+
+        opacity:1;
+
+    }
+
+    /* ===== SIDEBAR & CALENDAR ===== */
+    #sidebarWrapper {
+      position: fixed;
+      left: 0;
+      top: 88px;
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      z-index: 40;
+      transition: all .35s ease;
+    }
+
+    #sidebar {
+      width: 300px;
+      height: calc(100vh - 110px);
+      transition: all .35s ease;
+      overflow: hidden;
+    }
+
+    #sidebarWrapper.collapsed #sidebar {
+      width: 82px;
+    }
+
+    #sidebarWrapper.collapsed .sidebar-brand,
+    #sidebarWrapper.collapsed .sidebar-subtitle,
+    #sidebarWrapper.collapsed .nav-label {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    #sidebarWrapper.collapsed .sidebar-item {
+      justify-content: center;
+      gap: 0;
+    }
+
+    #calendar-panel {
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transition: all .35s ease;
+    }
+
+    #sidebarWrapper.collapsed #calendar-panel {
+      width: 320px;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #mainContent {
+      margin-left: 340px;
+      transition: all .35s ease;
+    }
+
+    #sidebarWrapper.collapsed~#mainContent {
+      margin-left: 440px;
+    }
+
+    .calendar-cell {
+      min-height: 58px;
+      border-radius: 18px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      transition: all .2s ease;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .calendar-cell:hover {
+      transform: translateY(-2px);
+    }
+
+    .calendar-tooltip {
+      position: absolute;
+      bottom: 68px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #33210d;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      white-space: nowrap;
+      display: none;
+      z-index: 100;
+    }
+
+    html.dark .calendar-tooltip {
+      background: #1e293b;
+      color: #f1f5f9;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .calendar-cell:hover .calendar-tooltip {
+      display: block;
+    }
+
+    @media(max-width:1024px) {
+      #sidebarWrapper {
+        display: none;
+      }
+
+      #mainContent {
+        margin-left: 0 !important;
+      }
+    }
+
+    /* =======================================================
+       AI BUDDY WELCOME SYSTEM
+    ======================================================= */
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    .ai-buddy-modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.7s ease, visibility 0.7s ease;
+    }
+
+    .ai-buddy-modal.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .ai-buddy-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 14, 23, 0.55);
+      backdrop-filter: blur(14px);
+    }
+
+    .ai-buddy-card {
+      position: relative;
+      width: min(420px, calc(100vw - 40px));
+      padding: 32px 28px 26px;
+      border-radius: 32px;
+      background: rgba(17, 23, 34, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 36px 80px rgba(10, 14, 23, 0.45);
+      backdrop-filter: blur(24px);
+      transform: translateY(12px);
+      animation: aiBuddyFloat 0.8s ease forwards;
+      z-index: 1001;
+    }
+
+    .ai-buddy-header h2 {
+      margin: 0 0 10px;
+      font-size: 2.15rem;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: #f8f4ee;
+      font-family: 'Libre Caslon Text', serif;
+    }
+
+    .ai-buddy-header p {
+      margin: 0 0 24px;
+      color: rgba(248, 244, 238, 0.78);
+      line-height: 1.7;
+      font-size: 0.98rem;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .ai-buddy-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .ai-buddy-input {
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      color: #f8f4ee;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.4s ease, transform 0.3s ease, box-shadow 0.4s ease;
+    }
+
+    .ai-buddy-input:focus {
+      border-color: rgba(255, 214, 138, 0.55);
+      box-shadow: 0 0 0 4px rgba(255, 214, 138, 0.12);
+      transform: scale(1.002);
+    }
+
+    .ai-buddy-button {
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: none;
+      background: linear-gradient(135deg, rgba(237, 189, 120, 0.95), rgba(201, 147, 82, 0.9));
+      color: #111827;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+    }
+
+    .ai-buddy-button:hover {
+      transform: translateY(-1px) scale(1.01);
+      box-shadow: 0 14px 28px rgba(184, 116, 52, 0.16);
+    }
+
+    .ai-buddy-button:active {
+      transform: translateY(0) scale(0.99);
+    }
+
+    .ai-buddy-hero {
+      margin-top: 1.5rem;
+      margin-bottom: 1.8rem;
+      padding: 22px 22px 18px;
+      border-radius: 28px;
+      width: min(100%, 760px);
+      max-width: 760px;
+      min-height: 140px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 24px 60px rgba(13, 19, 28, 0.18);
+    }
+
+    .ai-buddy-intro {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #33210d;
+      margin-bottom: 8px;
+    }
+
+    .ai-buddy-greeting,
+    .ai-buddy-note {
+      transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+      will-change: opacity, transform;
+    }
+
+    .ai-buddy-greeting {
+      margin: 0;
+      font-size: clamp(1.7rem, 2.1vw, 2.4rem);
+      line-height: 1.1;
+      color: #33210d;
+      letter-spacing: -0.03em;
+      min-height: 3rem;
+      opacity: 1;
+      transform: translateY(0);
+      overflow: hidden;
+      white-space: normal;
+    }
+
+    .ai-buddy-note {
+      margin: 10px 0 0;
+      color: #33210d;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      max-width: 760px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .ai-buddy-fade-out {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .ai-buddy-fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    html.dark .ai-buddy-greeting,
+    html.dark .ai-buddy-note,
+    html.dark .ai-buddy-intro {
+      color: #f3f4f6;
+    }
+
+    @keyframes aiBuddyFloat {
+      from { transform: translateY(22px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes aiBuddyTyping {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    @media (max-width: 640px) {
+      .ai-buddy-card {
+        padding: 24px 20px 22px;
+      }
+
+      .ai-buddy-hero {
+        padding: 22px 20px 20px;
+      }
+    }
+
+    /* =======================================================
+       AI BUDDY WELCOME SYSTEM
+    ======================================================= */
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    .ai-buddy-modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.7s ease, visibility 0.7s ease;
+    }
+
+    .ai-buddy-modal.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .ai-buddy-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 14, 23, 0.55);
+      backdrop-filter: blur(14px);
+    }
+
+    .ai-buddy-card {
+      position: relative;
+      width: min(420px, calc(100vw - 40px));
+      padding: 32px 28px 26px;
+      border-radius: 32px;
+      background: rgba(17, 23, 34, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 36px 80px rgba(10, 14, 23, 0.45);
+      backdrop-filter: blur(24px);
+      transform: translateY(12px);
+      animation: aiBuddyFloat 0.8s ease forwards;
+      z-index: 1001;
+    }
+
+    .ai-buddy-header h2 {
+      margin: 0 0 10px;
+      font-size: 2.15rem;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: #f8f4ee;
+      font-family: 'Libre Caslon Text', serif;
+    }
+
+    .ai-buddy-header p {
+      margin: 0 0 24px;
+      color: rgba(248, 244, 238, 0.78);
+      line-height: 1.7;
+      font-size: 0.98rem;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .ai-buddy-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .ai-buddy-input {
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      color: #f8f4ee;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.4s ease, transform 0.3s ease, box-shadow 0.4s ease;
+    }
+
+    .ai-buddy-input:focus {
+      border-color: rgba(255, 214, 138, 0.55);
+      box-shadow: 0 0 0 4px rgba(255, 214, 138, 0.12);
+      transform: scale(1.002);
+    }
+
+    .ai-buddy-button {
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: none;
+      background: linear-gradient(135deg, rgba(237, 189, 120, 0.95), rgba(201, 147, 82, 0.9));
+      color: #111827;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+    }
+
+    .ai-buddy-button:hover {
+      transform: translateY(-1px) scale(1.01);
+      box-shadow: 0 14px 28px rgba(184, 116, 52, 0.16);
+    }
+
+    .ai-buddy-button:active {
+      transform: translateY(0) scale(0.99);
+    }
+
+    .ai-buddy-hero {
+      margin-top: 1.5rem;
+      margin-bottom: 1.8rem;
+      padding: 22px 22px 18px;
+      border-radius: 28px;
+      width: min(100%, 760px);
+      max-width: 760px;
+      min-height: 140px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 24px 60px rgba(13, 19, 28, 0.18);
+    }
+
+    .ai-buddy-intro {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #33210d;
+      margin-bottom: 8px;
+    }
+
+    .ai-buddy-greeting,
+    .ai-buddy-note {
+      transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+      will-change: opacity, transform;
+    }
+
+    .ai-buddy-greeting {
+      margin: 0;
+      font-size: clamp(1.7rem, 2.1vw, 2.4rem);
+      line-height: 1.1;
+      color: #33210d;
+      letter-spacing: -0.03em;
+      min-height: 3rem;
+      opacity: 1;
+      transform: translateY(0);
+      overflow: hidden;
+      white-space: normal;
+    }
+
+    .ai-buddy-note {
+      margin: 10px 0 0;
+      color: #33210d;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      max-width: 760px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .ai-buddy-fade-out {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .ai-buddy-fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    html.dark .ai-buddy-greeting,
+    html.dark .ai-buddy-note,
+    html.dark .ai-buddy-intro {
+      color: #f3f4f6;
+    }
+
+    @keyframes aiBuddyFloat {
+      from { transform: translateY(22px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes aiBuddyTyping {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    @media (max-width: 640px) {
+      .ai-buddy-card {
+        padding: 24px 20px 22px;
+      }
+
+      .ai-buddy-hero {
+        padding: 22px 20px 20px;
+      }
+    }
+  </style>
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
+  {% block styles %}{% endblock %}
+</head>
+
+<body
+  class="bg-background text-on-background font-body-md selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+
+  <!-- AI Buddy Welcome Modal -->
+  <div id="aiBuddyModal" class="ai-buddy-modal" aria-hidden="true">
+    <div class="ai-buddy-backdrop"></div>
+    <div class="ai-buddy-card" role="dialog" aria-modal="true" aria-labelledby="aiBuddyHeading">
+      <div class="ai-buddy-header">
+        <h2 id="aiBuddyHeading">What should I call you?</h2>
+        <p>Let me personalize your Axiom workspace.</p>
+      </div>
+      <form id="aiBuddyForm" class="ai-buddy-form">
+        <label for="aiBuddyNameInput" class="sr-only">Enter your name</label>
+        <input id="aiBuddyNameInput" class="ai-buddy-input" type="text" name="name" placeholder="Enter your name" autocomplete="name" aria-label="Enter your name" required />
+        <button type="submit" class="ai-buddy-button">Continue</button>
+      </form>
+    </div>
+  </div>
+
+  <header
+    class="bg-surface shadow-[0_20px_40px_rgba(75,54,33,0.05)] fixed top-0 left-0 right-0 z-50 transition-colors duration-300">
+    <nav class="flex justify-between items-center w-full px-gutter py-md max-w-[1400px] mx-auto">
+      <div class="flex items-center gap-xl">
+        <span class="font-display-lg text-headline-md text-primary">Axiom AI</span>
+        <div class="hidden md:flex gap-lg">
+          <a class="{% if active_page == 'dashboard' %}text-primary font-bold border-b-2 border-secondary{% else %}text-on-surface-variant hover:text-secondary transition-colors duration-200{% endif %} font-headline-md text-headline-md py-1"
+            href="{{ url_for('dashboard.index') }}">Dashboard</a>
+          <a class="{% if active_page == 'upload' %}text-primary font-bold border-b-2 border-secondary{% else %}text-on-surface-variant hover:text-secondary transition-colors duration-200{% endif %} font-headline-md text-headline-md py-1"
+            href="{{ url_for('upload.upload_page') }}">Vault</a>
+          <a class="{% if active_page == 'study_plan' %}text-primary font-bold border-b-2 border-secondary{% else %}text-on-surface-variant hover:text-secondary transition-colors duration-200{% endif %} font-headline-md text-headline-md py-1"
+            href="{{ url_for('dashboard.study_plan_page') }}">Study Plan</a>
+          <a class="{% if active_page == 'pomodoro' %}text-primary font-bold border-b-2 border-secondary{% else %}text-on-surface-variant hover:text-secondary transition-colors duration-200{% endif %} font-headline-md text-headline-md py-1"
+            href="{{ url_for('dashboard.pomodoro_page') }}">Bloom Focus</a>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end ml-auto pr-2">
+        <div id="axiomDynamicToggle"
+             class="premium-artwork-toggle"
+             role="button"
+             aria-label="Toggle Theme">
+
+          <!-- SKY -->
+          <div class="toggle-sky day-sky"></div>
+          <div class="toggle-sky night-sky"></div>
+
+          <!-- STARS -->
+          <div class="stars-layer">
+            <span class="star s1"></span>
+            <span class="star s2"></span>
+            <span class="star s3"></span>
+            <span class="star s4"></span>
+            <span class="star s5"></span>
+          </div>
+
+          <!-- CLOUDS -->
+          <div class="cloud cloud-1"></div>
+          <div class="cloud cloud-2"></div>
+
+          <!-- CELESTIAL -->
+          <div class="celestial-wrapper">
+
+            <div class="sun"></div>
+
+            <div class="moon"></div>
+
+          </div>
+
+          <!-- BACKGROUND CITY / WALL -->
+          <div class="background-layer"></div>
+
+          <!-- GROUND -->
+          <div class="ground"></div>
+
+          <!-- STREET LIGHT -->
+          <div class="lamp-post">
+
+            <div class="lamp-head">
+
+    <div class="lamp-crown"></div>
+
+    <div class="lamp-bell"></div>
+
+    <div class="lamp-glass"></div>
+
+    <div class="lamp-light-cone"></div>
+
+</div>
+
+
+            <!-- GROUND LIGHT -->
+            <div class="ground-light"></div>
+
+          </div>
+
+          <!-- BENCH -->
+          <div class="bench">
+
+            <div class="bench-seat"></div>
+
+            <div class="bench-back"></div>
+
+            <div class="bench-leg left"></div>
+            <div class="bench-leg right"></div>
+
+            <!-- BENCH LIGHT -->
+            <div class="bench-light"></div>
+
+          </div>
+
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="relative max-w-[1600px] mx-auto min-h-screen pt-[110px]">
+    <div class="hidden md:flex" id="sidebarWrapper">
+      <aside id="sidebar"
+        class="bg-surface-container-low rounded-r-[32px] shadow-sm border border-outline-variant/20 p-lg flex flex-col transition-all duration-300">
+        <div class="flex items-center justify-between mb-xl">
+          <div class="sidebar-brand transition-all duration-300">
+            <h2 class="font-headline-md text-headline-md text-primary">Axiom Planner</h2>
+            <p class="sidebar-subtitle font-body-md text-on-surface-variant text-sm">Deep Work Session</p>
+          </div>
+          <button id="sidebarToggle"
+            class="p-3 rounded-full bg-surface shadow-sm hover:bg-surface-container-highest transition-all">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+        </div>
+        <nav class="flex flex-col gap-sm">
+          <a href="{{ url_for('dashboard.index') }}"
+            class="sidebar-item flex items-center gap-md p-md rounded-full transition-all duration-300 {% if active_page == 'dashboard' %}bg-secondary-container text-on-secondary-container translate-x-1{% else %}text-on-surface-variant hover:bg-surface-container-highest{% endif %}">
+            <span class="material-symbols-outlined">dashboard</span><span
+              class="nav-label font-body-md">Dashboard</span>
+          </a>
+          <a href="{{ url_for('upload.upload_page') }}"
+            class="sidebar-item flex items-center gap-md p-md rounded-full transition-all duration-300 {% if active_page == 'upload' %}bg-secondary-container text-on-secondary-container translate-x-1{% else %}text-on-surface-variant hover:bg-surface-container-highest{% endif %}">
+            <span class="material-symbols-outlined">upload_file</span><span class="nav-label font-body-md">Vault</span>
+          </a>
+          <a href="{{ url_for('dashboard.study_plan_page') }}"
+            class="sidebar-item flex items-center gap-md p-md rounded-full transition-all duration-300 {% if active_page == 'study_plan' %}bg-secondary-container text-on-secondary-container translate-x-1{% else %}text-on-surface-variant hover:bg-surface-container-highest{% endif %}">
+            <span class="material-symbols-outlined">school</span><span class="nav-label font-body-md">Study Plan</span>
+          </a>
+          <a href="{{ url_for('dashboard.pomodoro_page') }}"
+            class="sidebar-item flex items-center gap-md p-md rounded-full transition-all duration-300 {% if active_page == 'pomodoro' %}bg-secondary-container text-on-secondary-container translate-x-1{% else %}text-on-surface-variant hover:bg-surface-container-highest{% endif %}">
+            <span class="material-symbols-outlined">local_florist</span><span class="nav-label font-body-md">Bloom Focus</span>
+          </a>
+        </nav>
+      </aside>
+
+      <div id="calendar-panel"
+        class="bg-surface-container-low rounded-[28px] border border-outline-variant/20 shadow-sm transition-all duration-300">
+        <div class="p-lg min-h-[calc(100vh-110px)] overflow-visible">
+          <div class="mb-lg">
+            <p class="font-label-sm uppercase tracking-wider text-on-surface-variant mb-xs">Current Month</p>
+            <h2 id="calendarMonth" class="font-headline-lg text-headline-lg text-primary"></h2>
+          </div>
+          <div class="grid grid-cols-7 gap-2 text-center text-xs uppercase text-on-surface-variant mb-md">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+          </div>
+          <div id="calendarGrid" class="grid grid-cols-7 gap-2 auto-rows-[72px]"></div>
+          <div class="mt-lg space-y-sm text-sm text-on-surface-variant">
+            <div class="flex items-center gap-sm">
+              <div class="w-3 h-3 rounded-full bg-secondary-container"></div>Assignment
+            </div>
+            <div class="flex items-center gap-sm">
+              <div class="w-3 h-3 rounded-full bg-primary-container"></div>Exam
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main id="mainContent" class="px-gutter py-xl">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <footer class="bg-surface-bright border-t border-outline-variant/30 mt-xl transition-colors duration-300">
+    <div class="w-full py-xl px-gutter flex justify-center items-center max-w-container-max mx-auto">
+      <span class="font-headline-md text-primary">Axiom Academic</span>
+    </div>
+  </footer>
+
+  <script>
+    window.calendarItems = {{ calendar_items | default ([]) | tojson | safe }};
+  </script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+  <script>
+    (function () {
+      const toggle = document.getElementById('axiomDynamicToggle');
+      const htmlEl = document.documentElement;
+
+      toggle.addEventListener('click', () => {
+        if (htmlEl.classList.contains('dark')) {
+          htmlEl.classList.remove('dark');
+          htmlEl.classList.add('light');
+          localStorage.setItem('axiom-theme', 'light');
+        } else {
+          htmlEl.classList.remove('light');
+          htmlEl.classList.add('dark');
+          localStorage.setItem('axiom-theme', 'dark');
+        }
+      });
+    })();
+  </script>
+  <script>
+    (function () {
+      const STORAGE_KEY = 'axiomBuddyName';
+      const VISIT_FLAG = 'axiomBuddyFirstVisitCompleted';
+      const modal = document.getElementById('aiBuddyModal');
+      const body = document.body;
+      const form = document.getElementById('aiBuddyForm');
+      const nameInput = document.getElementById('aiBuddyNameInput');
+      const greetingElement = document.getElementById('aiBuddyGreetingText');
+      const greetingNote = document.getElementById('aiBuddyGreetingNote');
+
+      const shouldResetBuddy = new URLSearchParams(window.location.search).get('resetBuddy') === 'true';
+      if (shouldResetBuddy) {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(VISIT_FLAG);
+      }
+
+      const getCleanName = (value) => {
+        const name = value.trim();
+        return name ? name[0].toUpperCase() + name.slice(1) : '';
+      };
+
+      const timeGreetings = {
+        earlyMorning: {
+          title: [
+            "The world is still quiet, {username}.",
+            "You’re awake before the city again, {username}.",
+            "This early silence suits deep work."
+          ],
+          note: [
+            "Let's capture the stillness of these early hours.",
+            "A quiet head-start on the day's aspirations.",
+            "Your dedication is the only sound in the room."
+          ]
+        },
+        morning: {
+          title: [
+            "The workspace feels bright today, {username}.",
+            "Today already feels focused.",
+            "A calm morning waits for your thoughts."
+          ],
+          note: [
+            "Let's step gently into your morning flow.",
+            "Clear minds make for steady progress today.",
+            "Ready to turn ideas into focus."
+          ]
+        },
+        afternoon: {
+          title: [
+            "Your desk still carries today’s momentum.",
+            "A steady afternoon for progress.",
+            "There’s still time to build something meaningful."
+          ],
+          note: [
+            "Keep the rhythm, {username}. You're doing well.",
+            "A thoughtful pause before we continue.",
+            "Let's make this afternoon session count."
+          ]
+        },
+        evening: {
+          title: [
+            "The lights are beginning to glow.",
+            "Evenings always feel calmer here, {username}.",
+            "The workspace quieted down for tonight."
+          ],
+          note: [
+            "The perfect time to settle into a deeper focus.",
+            "A serene atmosphere for your final push.",
+            "Let's find clarity in the evening quiet."
+          ]
+        },
+        night: {
+          title: [
+            "Tonight feels perfect for deep focus.",
+            "The moonlight suits your workflow, {username}.",
+            "Another quiet study night begins."
+          ],
+          note: [
+            "No distractions now. Just you and your thoughts.",
+            "Creating something beautiful under the warm glow of the lamp.",
+            "Let's end the day with a focused mind."
+          ]
+        },
+        midnight: {
+          title: [
+            "Only the lamp and your thoughts remain awake.",
+            "Last night’s focus session ran long, {username}.",
+            "The workspace stayed awake with you."
+          ],
+          note: [
+            "A quiet sanctuary for your midnight focus.",
+            "Silent hours holding your deepest ideas.",
+            "The universe is asleep; your ambition is awake."
+          ]
+        }
+      };
+
+      const getTimeSegment = () => {
+        const hour = new Date().getHours();
+        if (hour >= 4 && hour < 7) return 'earlyMorning';
+        if (hour >= 7 && hour < 12) return 'morning';
+        if (hour >= 12 && hour < 17) return 'afternoon';
+        if (hour >= 17 && hour < 20) return 'evening';
+        if (hour >= 20 && hour < 24) return 'night';
+        return 'midnight';
+      };
+
+      let currentTitleIndex = -1;
+      let currentNoteIndex = -1;
+      let lastSegment = null;
+
+      const renderGreeting = (name) => {
+        const segment = getTimeSegment();
+        const pool = timeGreetings[segment];
+        
+        if (segment !== lastSegment) {
+          lastSegment = segment;
+          currentTitleIndex = -1;
+          currentNoteIndex = -1;
+        }
+
+        let titleIdx = Math.floor(Math.random() * pool.title.length);
+        let noteIdx = Math.floor(Math.random() * pool.note.length);
+
+        if (pool.title.length > 1 && titleIdx === currentTitleIndex) {
+          titleIdx = (titleIdx + 1) % pool.title.length;
+        }
+        if (pool.note.length > 1 && noteIdx === currentNoteIndex) {
+          noteIdx = (noteIdx + 1) % pool.note.length;
+        }
+
+        currentTitleIndex = titleIdx;
+        currentNoteIndex = noteIdx;
+
+        const rawTitle = pool.title[titleIdx];
+        const rawNote = pool.note[noteIdx];
+
+        const finalTitle = rawTitle.replace('{username}', name);
+        const finalNote = rawNote.replace('{username}', name);
+
+        animateTextUpdate(greetingElement, finalTitle);
+        animateTextUpdate(greetingNote, finalNote);
+      };
+
+      let greetingTimer = null;
+
+      const animateTextUpdate = (element, nextText) => {
+        if (!element) return;
+        if (element.textContent.trim() === nextText.trim()) return;
+        element.classList.add('ai-buddy-fade-out');
+        element.classList.remove('ai-buddy-fade-in');
+
+        window.setTimeout(() => {
+          element.textContent = nextText;
+          element.classList.remove('ai-buddy-fade-out');
+          element.classList.add('ai-buddy-fade-in');
+        }, 280);
+      };
+
+      const startGreetingClock = (name) => {
+        if (greetingTimer) {
+          window.clearInterval(greetingTimer);
+        }
+        renderGreeting(name);
+        let minutesPassed = 0;
+        greetingTimer = window.setInterval(() => {
+          minutesPassed++;
+          const currentSegment = getTimeSegment();
+          if (currentSegment !== lastSegment || minutesPassed >= 5) {
+            minutesPassed = 0;
+            renderGreeting(name);
+          }
+        }, 60000);
+      };
+
+      const updateDashboardHeading = (name, isFirstVisit = false) => {
+        const dashboardName = document.getElementById('dashboardName');
+        const dashboardPrefix = document.getElementById('dashboardHeadingPrefix');
+        if (!dashboardName) return;
+        dashboardName.textContent = name || 'Buddy';
+        if (dashboardPrefix) {
+          dashboardPrefix.textContent = isFirstVisit ? 'Welcome' : 'Welcome back';
+        }
+      };
+
+      const openModal = () => {
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        body.classList.add('modal-open');
+        window.setTimeout(() => nameInput.focus(), 400);
+      };
+
+      const closeModal = () => {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        body.classList.remove('modal-open');
+      };
+
+      const markFirstVisitComplete = () => {
+        localStorage.setItem(VISIT_FLAG, 'true');
+      };
+
+      const saveName = (value) => {
+        const name = getCleanName(value);
+        if (!name) return;
+        localStorage.setItem(STORAGE_KEY, name);
+        markFirstVisitComplete();
+        closeModal();
+        updateDashboardHeading(name, true);
+        startGreetingClock(name);
+      };
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        saveName(nameInput.value);
+      });
+
+      const savedName = localStorage.getItem(STORAGE_KEY);
+      const returningUser = localStorage.getItem(VISIT_FLAG) === 'true';
+
+      if (savedName && returningUser) {
+        updateDashboardHeading(savedName, false);
+        startGreetingClock(savedName);
+      } else if (savedName && !returningUser) {
+        markFirstVisitComplete();
+        updateDashboardHeading(savedName, true);
+        startGreetingClock(savedName);
+      } else {
+        openModal();
+      }
+    })();
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Study Plan - Axiom AI Planner{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="mb-xl">
+<h1 class="font-display-lg text-display-lg text-primary mb-xs">Study Plan</h1>
+<p class="font-body-lg text-on-surface-variant max-w-2xl">Your personalized AI-generated study schedule</p>
+</section>
+<!-- Daily Study Plan -->
+<div class="bg-surface-container-low p-xl rounded-xl border border-outline-variant/20">
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-lg gap-md">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary">Daily Study Plan</h3>
+<span class="font-label-sm text-secondary bg-secondary-fixed/30 px-md py-xs rounded-full">
+    {{ 'Current Plan' if study_plan else 'Ready to Generate' }}
+</span>
+</div>
+{% if can_generate_study_plan %}
+<form action="{{ url_for('dashboard.generate_study_plan_page') }}" method="POST">
+    <button type="submit" class="bg-primary text-on-primary py-md px-xl rounded-lg font-bold hover:bg-primary-container hover:text-on-primary-container transition-colors inline-flex items-center justify-center gap-sm whitespace-nowrap shadow-sm">
+        <span class="material-symbols-outlined">{{ 'refresh' if study_plan else 'auto_awesome' }}</span>
+        {{ 'Regenerate Plan' if study_plan else 'Generate Study Plan' }}
+    </button>
+</form>
+{% endif %}
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md mb-lg">
+    <div class="bg-surface p-md rounded-2xl border border-outline-variant/20">
+        <p class="font-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Today</p>
+        <p class="font-headline-sm text-headline-sm text-primary mb-3">{{ today_schedule.date }}</p>
+        {% if today_schedule.tasks %}
+        <ul class="space-y-2">
+            {% for task in today_schedule.tasks %}
+            <li class="completable-task rounded-xl bg-surface-container-high p-3 text-on-surface"
+                data-task-id="assignment-{{ task.id }}"
+                data-task-title="{{ task.title|e }}">
+                <span class="task-title font-medium">{{ task.title }}</span>
+                <span class="block text-sm text-on-surface-variant mt-1">{{ task.daily_work }} workload</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="font-body-md text-on-surface-variant">No tasks scheduled for today.</p>
+        {% endif %}
+    </div>
+    <div class="bg-surface p-md rounded-2xl border border-outline-variant/20">
+        <p class="font-label-sm text-on-surface-variant uppercase tracking-wider mb-2">This Week</p>
+        <p class="font-headline-sm text-headline-sm text-primary mb-3">{{ this_week_task_count }} task{{ 's' if this_week_task_count != 1 else '' }}</p>
+        <p class="font-body-sm text-on-surface-variant mb-4">Total weekly workload: {{ this_week_workload }} hours</p>
+        <div class="space-y-2 text-sm text-on-surface-variant">
+            {% for day in schedule %}
+            <div class="flex justify-between items-center">
+                <span>{{ day.date }}</span>
+                <span class="font-medium">{{ day.tasks|length }} task{{ 's' if day.tasks|length != 1 else '' }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="space-y-md" id="study-plan-container">
+{% if study_plan_sections %}
+    {% for section in study_plan_sections %}
+    <div class="border border-outline-variant/20 rounded-2xl overflow-hidden bg-surface shadow-sm">
+        <div class="w-full flex justify-between items-center gap-md px-md py-md text-left">
+            <button type="button" class="flex-1 flex justify-between items-center text-left" onclick="toggleSection(event)">
+                <span class="font-headline-sm text-headline-sm text-primary">{{ section.title }}</span>
+                <span class="material-symbols-outlined text-secondary">expand_more</span>
+            </button>
+        </div>
+        <div class="section-details px-md pb-md hidden text-on-surface-variant">{{ section.details|safe }}</div>
+    </div>
+    {% endfor %}
+{% elif study_plan %}
+    <div class="border border-outline-variant/20 rounded-2xl bg-surface p-md">
+        <pre class="whitespace-pre-wrap font-body-md text-on-surface">{{ study_plan }}</pre>
+    </div>
+{% else %}
+    <div class="border border-dashed border-outline-variant/40 rounded-2xl bg-surface p-xl text-center">
+        <span class="material-symbols-outlined text-secondary mb-md text-4xl">auto_awesome</span>
+        <h4 class="font-headline-sm text-headline-sm text-primary mb-sm">Generate a fresh study plan</h4>
+        {% if can_generate_study_plan %}
+        <p class="font-body-md text-on-surface-variant mb-lg">Axiom will analyze your remaining assignments and exams before creating the plan.</p>
+        <form action="{{ url_for('dashboard.generate_study_plan_page') }}" method="POST">
+            <button type="submit" class="bg-primary text-on-primary py-md px-xl rounded-lg font-bold hover:bg-primary-container hover:text-on-primary-container transition-colors inline-flex items-center justify-center gap-sm shadow-sm">
+                <span class="material-symbols-outlined">auto_awesome</span>
+                Generate Study Plan
+            </button>
+        </form>
+        {% else %}
+        <p class="font-body-md text-on-surface-variant">Add an assignment or exam to generate a personalized plan.</p>
+        {% endif %}
+    </div>
+{% endif %}
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleSection(event) {
+    const card = event.currentTarget.closest('div.border');
+    if (!card) return;
+    const details = card.querySelector('.section-details');
+    if (!details) return;
+    details.classList.toggle('hidden');
+    const icon = card.querySelector('.material-symbols-outlined');
+    if (icon) {
+        icon.textContent = details.classList.contains('hidden') ? 'expand_more' : 'expand_less';
+    }
+}
+</script>
+{% endblock %}

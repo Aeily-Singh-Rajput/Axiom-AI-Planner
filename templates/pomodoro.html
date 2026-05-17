@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Axiom AI Planner - Bloom Focus{% endblock %}
+
+{% block styles %}
+<style>
+  #mainContent {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  footer {
+    display: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="plant-pomodoro-card pomodoro-page-card" aria-labelledby="plantPomodoroTitle">
+  <div class="pomodoro-header">
+    <div>
+      <h2 id="plantPomodoroTitle" class="pomodoro-title">Grow Through Deep Work</h2>
+    </div>
+    <div class="session-badge">
+      <span id="sessionCount">0</span> Sessions
+    </div>
+  </div>
+
+  <div class="pomodoro-stage">
+    <div class="ambient-particles" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="completion-sparkles" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="completion-message" id="completionMessage" aria-live="polite"></div>
+
+    <div class="timer-ring" aria-hidden="true">
+      <svg class="progress-ring" viewBox="0 0 320 320">
+        <circle class="ring-bg" cx="160" cy="160" r="138"></circle>
+        <circle class="ring-progress" cx="160" cy="160" r="138"></circle>
+      </svg>
+    </div>
+
+    <div class="plant-scene">
+      <div class="plant-glow"></div>
+      <div class="plant-container">
+        <div class="leaf leaf-small-left"></div>
+        <div class="leaf leaf-small-right"></div>
+        <div class="leaf leaf-left"></div>
+        <div class="leaf leaf-right"></div>
+        <div class="plant-flower lavender-main" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="plant-flower lavender-side lavender-left" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="plant-flower lavender-side lavender-right" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="plant-stem"></div>
+        <div class="soil-line"></div>
+        <div class="plant-pot"></div>
+      </div>
+    </div>
+
+    <div class="timer-content">
+      <div class="timer-mode" id="timerMode">Focus Time</div>
+      <div class="timer-display" id="timerDisplay">40:00</div>
+      <div class="timer-message" id="focusMessage">Let the room go quiet. Keep growing.</div>
+    </div>
+  </div>
+
+  <div class="pomodoro-controls">
+    <button class="pomodoro-btn primary-btn" id="startTimer" type="button">
+      <span class="material-symbols-outlined">play_arrow</span>
+      Start
+    </button>
+    <button class="pomodoro-btn" id="pauseTimer" type="button">
+      <span class="material-symbols-outlined">pause</span>
+      Pause
+    </button>
+    <button class="pomodoro-btn" id="resetTimer" type="button">
+      <span class="material-symbols-outlined">restart_alt</span>
+      Reset
+    </button>
+  </div>
+
+  <div class="pomodoro-modes">
+    <button class="mode-btn active-mode" data-mode="focus" data-time="40" type="button">Focus</button>
+    <button class="mode-btn" data-mode="short" data-time="5" type="button">Short Break</button>
+    <button class="mode-btn" data-mode="long" data-time="15" type="button">Long Break</button>
+  </div>
+</section>
+{% endblock %}

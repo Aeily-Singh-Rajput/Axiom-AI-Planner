@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+{% block title %}Axiom AI Planner - Dashboard{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="mb-xl">
+  <h1 class="font-display-lg text-display-lg text-primary"><span id="dashboardHeadingPrefix">Welcome back</span>, <span id="dashboardName">Buddy</span></h1>
+  <div class="ai-buddy-hero" aria-live="polite">
+    <div class="ai-buddy-intro">Axiom Buddy</div>
+    <h1 class="ai-buddy-greeting"><span id="aiBuddyGreetingText">Welcome.</span></h1>
+    <p id="aiBuddyGreetingNote" class="ai-buddy-note">Your intelligent academic companion is preparing your environment.</p>
+  </div>
+</section>
+
+<!-- Add Assignment Form -->
+<section class="mb-xl bg-surface-container-low p-xl rounded-xl">
+<h3 class="font-headline-md text-headline-md text-primary mb-lg">Add New Assignment</h3>
+<form action="{{ url_for('assignment.add_assignment') }}" method="POST" class="grid grid-cols-1 md:grid-cols-5 gap-lg items-end">
+<div class="md:col-span-2">
+<label class="font-label-sm text-on-surface-variant uppercase tracking-wider mb-xs block">Title</label>
+<input name="title" class="w-full p-md bg-surface border border-outline-variant rounded-lg form-input-focus" placeholder="e.g., Quantum Mechanics Thesis" required>
+</div>
+<div class="md:col-span-1">
+<label class="font-label-sm text-on-surface-variant uppercase tracking-wider mb-xs block">Deadline</label>
+<input name="deadline" type="date" class="w-full p-md bg-surface border border-outline-variant rounded-lg form-input-focus" required>
+</div>
+<div class="md:col-span-1">
+<label class="font-label-sm text-on-surface-variant uppercase tracking-wider mb-xs block">Difficulty</label>
+<select name="difficulty" class="w-full p-md bg-surface border border-outline-variant rounded-lg form-input-focus">
+<option value="1">Easy</option>
+<option value="2">Medium</option>
+<option value="3">Hard</option>
+</select>
+</div>
+<div class="md:col-span-1">
+<label class="font-label-sm text-on-surface-variant uppercase tracking-wider mb-xs block">Size</label>
+<select name="size" class="w-full p-md bg-surface border border-outline-variant rounded-lg form-input-focus">
+<option value="1">Small</option>
+<option value="2">Medium</option>
+<option value="3">Large</option>
+</select>
+</div>
+<button type="submit" class="bg-primary text-on-primary py-md px-xl rounded-lg font-bold hover:bg-primary-container transition-colors inline-flex items-center justify-center gap-sm whitespace-nowrap min-w-[12rem]">
+<span class="material-symbols-outlined">add</span>
+Add Assignment
+</button>
+</form>
+</section>
+<!-- Exam Registry -->
+<section class="bg-surface-container-low p-xl rounded-xl mb-xl">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-xl gap-lg">
+    <div>
+      <h3 class="font-headline-lg text-headline-lg text-primary">Exam Registry</h3>
+      <p class="text-on-surface-variant">Log upcoming assessments to synchronize with your study deep-work blocks.</p>
+    </div>
+  </div>
+  <form class="flex flex-col md:flex-row gap-lg items-end bg-surface-bright p-lg rounded-xl border border-outline-variant/30 mb-xl" action="{{ url_for('exam.add_exam') }}" method="POST">
+    <div class="flex-1 space-y-unit w-full">
+      <label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Subject</label>
+      <input name="subject" class="w-full p-md bg-surface border border-outline-variant rounded-lg form-input-focus" placeholder="e.g., Advanced Microeconomics" type="text" required/>
+    </div>
+    <div class="w-full md:w-48 space-y-unit">
+      <label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Exam Date</label>
+      <input name="exam_date" class="w-full p-md bg-surface border border-outline-variant rounded-lg form-input-focus" type="date" required/>
+    </div>
+    <div class="w-full md:w-48 space-y-unit">
+      <label class="font-label-sm text-on-surface-variant uppercase tracking-wider">Syllabus</label>
+      <input name="syllabus" class="w-full p-md bg-surface border border-outline-variant rounded-lg form-input-focus" placeholder="Optional notes" type="text"/>
+    </div>
+    <button class="w-full md:w-auto bg-primary-container text-on-primary py-md px-xl rounded-lg font-bold hover:bg-[#6F4E37] transition-all flex items-center justify-center gap-md" type="submit">
+      <span class="material-symbols-outlined">add</span>
+      Add Exam
+    </button>
+  </form>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left">
+      <thead>
+        <tr class="border-b border-outline-variant">
+          <th class="py-md px-lg font-label-sm text-on-surface-variant uppercase">Subject</th>
+          <th class="py-md px-lg font-label-sm text-on-surface-variant uppercase">Examination Date</th>
+          <th class="py-md px-lg font-label-sm text-on-surface-variant uppercase">Status</th>
+          <th class="py-md px-lg"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if exams %}
+          {% for exam in exams %}
+            <tr class="completable-task planner-table-row transition-colors group"
+                data-task-id="exam-{{ exam.id }}"
+                data-task-title="{{ exam.subject|e }}"
+                data-exam-date="{{ exam.exam_date }}"
+                data-remove-on-complete="true">
+              <td class="task-title py-lg px-lg font-headline-md text-primary">{{ exam.subject }}</td>
+              <td class="py-lg px-lg text-on-surface-variant">{{ exam.exam_date }}</td>
+              <td class="py-lg px-lg">
+                <div class="flex items-center gap-sm">
+                  <div class="w-3 h-3 rounded-full bg-secondary"></div>
+                  <span class="task-status text-label-sm">Planned</span>
+                </div>
+              </td>
+              <td class="py-lg px-lg text-right">
+                <button type="button" class="done-task-btn mr-md">
+                  <span class="material-symbols-outlined">check</span>
+                  Done
+                </button>
+                <form action="{{ url_for('exam.delete_exam', exam_id=exam.id) }}" method="POST">
+                  <button type="submit" class="material-symbols-outlined text-outline hover:text-error">delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td class="py-lg px-lg text-on-surface-variant" colspan="4">No exams registered yet.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</section>
+<!-- Stat Cards Bento -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg mb-xl">
+<div class="bg-surface-container-low p-lg rounded-xl shadow-sm hover:shadow-md transition-shadow border border-outline-variant/10">
+<span class="material-symbols-outlined text-secondary mb-md" data-icon="assignment">assignment</span>
+<p class="font-label-sm text-on-surface-variant mb-xs">Total Assignments</p>
+<p id="remainingAssignmentsCount" class="font-headline-lg text-headline-lg text-primary">{{ assignments|length }}</p>
+</div>
+<div class="bg-surface-container-low p-lg rounded-xl shadow-sm hover:shadow-md transition-shadow border border-outline-variant/10">
+<span class="material-symbols-outlined text-secondary mb-md" data-icon="event">event</span>
+<p class="font-label-sm text-on-surface-variant mb-xs">Upcoming Exams</p>
+<p id="upcomingExamsCount" class="font-headline-lg text-headline-lg text-primary">{{ exams|length }}</p>
+</div>
+<div id="dashboardStressCard" class="stress-card bg-surface-container-low p-lg rounded-xl shadow-sm hover:shadow-md transition-shadow border border-outline-variant/10" data-stress-level="{{ stress.level }}" data-stress-score="{{ stress.score }}">
+<span class="material-symbols-outlined text-secondary mb-md" data-icon="psychology">psychology</span>
+<div class="flex items-center justify-between gap-sm mb-xs">
+<p class="font-label-sm text-on-surface-variant">Stress Level</p>
+<span id="dashboardStressBadge" class="stress-badge" data-stress-level="{{ stress.level }}">{{ stress.level }}</span>
+</div>
+<p id="dashboardStressLevel" class="font-headline-lg text-headline-lg text-secondary">{{ stress.level }}</p>
+<div class="stress-meter" aria-label="Academic stress score">
+<div id="dashboardStressBar" class="stress-meter-fill" style="width: {{ stress.score }}%"></div>
+</div>
+<div class="stress-card-footer">
+<span id="dashboardStressScore">{{ stress.score }}/100</span>
+<div id="stressHistoryChart" class="stress-history-chart" aria-label="Seven day stress history"></div>
+</div>
+</div>
+<div class="bg-surface-container-low p-lg rounded-xl shadow-sm hover:shadow-md transition-shadow border border-outline-variant/10">
+<span class="material-symbols-outlined text-secondary mb-md" data-icon="today">today</span>
+<p class="font-label-sm text-on-surface-variant mb-xs">Tasks Due Today</p>
+<p id="tasksDueTodayCount" class="font-headline-lg text-headline-lg text-primary">{{ due_today_count }}</p>
+</div>
+</div>
+<!-- Productivity Analytics -->
+<section class="productivity-analytics mb-xl" data-total-tasks="{{ assignments|length + exams|length }}">
+  <div class="analytics-header">
+    <div>
+      <p class="analytics-kicker">Productivity Analytics</p>
+      <h3>Focus Momentum</h3>
+    </div>
+    <p id="productivityMessage" class="analytics-message">Deep work in progress.</p>
+  </div>
+  <div class="analytics-grid">
+    <div class="analytics-metric">
+      <span class="material-symbols-outlined">task_alt</span>
+      <p>Completed Today</p>
+      <strong data-analytics-value="completedToday">0</strong>
+    </div>
+    <div class="analytics-metric">
+      <span class="material-symbols-outlined">local_florist</span>
+      <p>Focus Sessions</p>
+      <strong data-analytics-value="focusSessions">0</strong>
+    </div>
+    <div class="analytics-metric">
+      <span class="material-symbols-outlined">trending_up</span>
+      <p>Productivity</p>
+      <strong data-analytics-value="productivityPercent">0%</strong>
+    </div>
+    <div class="analytics-metric">
+      <span class="material-symbols-outlined">calendar_month</span>
+      <p>Weekly Consistency</p>
+      <strong data-analytics-value="weeklyConsistency">0%</strong>
+    </div>
+    <div class="analytics-metric">
+      <span class="material-symbols-outlined">local_fire_department</span>
+      <p>Study Streak</p>
+      <strong data-analytics-value="studyStreak">0</strong>
+    </div>
+  </div>
+  <div class="analytics-chart-card">
+    <div class="chart-heading">
+      <div>
+        <p class="analytics-kicker">Last 7 Days</p>
+        <h4>Completion Flow</h4>
+      </div>
+      <span>Tasks completed</span>
+    </div>
+    <div id="productivityChart" class="productivity-chart" aria-label="Last seven days productivity chart"></div>
+  </div>
+</section>
+<!-- AI Insights / Stress Monitor -->
+<div class="bg-surface-container-high p-xl rounded-xl border border-dashed border-secondary/40 flex flex-col justify-center mb-xl">
+<h3 class="font-headline-md text-headline-md text-primary mb-md">Axiom Insights</h3>
+<div id="axiomInsightsBody" class="space-y-lg">
+{% if alerts %}
+{% for alert in alerts %}
+<div class="insight-alert p-md bg-red-100 rounded-lg border-l-4 border-red-500">
+<p class="font-label-sm text-red-700 uppercase tracking-widest mb-xs">Alert</p>
+<p class="font-body-md text-red-800">{{ alert }}</p>
+</div>
+{% endfor %}
+{% else %}
+<div id="noActiveAlertsMessage" class="p-md bg-surface/50 rounded-lg">
+<p class="font-body-md text-on-surface-variant">No active alerts. You’re clear for the week unless new deadlines appear.</p>
+</div>
+{% endif %}
+<div class="p-md bg-surface/50 rounded-lg flex items-center gap-md">
+<div id="insightStressEmoji" class="text-5xl">{{ stress.emoji }}</div>
+<div>
+<p class="font-label-sm text-secondary uppercase tracking-widest mb-xs">Stress Level</p>
+<p id="insightStressLevel" class="font-headline-sm font-semibold text-primary mb-2">{{ stress.level }}</p>
+<p id="insightStressMessage" class="font-body-md text-on-surface-variant italic">{{ stress.message }}</p>
+<p id="insightStressRecommendation" class="font-body-md text-on-surface-variant mt-sm">{{ stress.recommendation }}</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Assignments Table -->
+<section class="bg-surface-container-low rounded-xl border border-outline-variant/20 overflow-hidden">
+<div class="p-xl border-b border-outline-variant/10">
+<h3 class="font-headline-md text-headline-md text-primary">Recent Assignments</h3>
+</div>
+<div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+        <thead>
+            <tr class="bg-surface-container-high font-label-sm text-on-surface-variant">
+                <th class="px-xl py-md">Title</th>
+                <th class="px-xl py-md">Deadline</th>
+                <th class="px-xl py-md">Status</th>
+                <th class="px-xl py-md text-right">Action</th>
+            </tr>
+        </thead>
+        <tbody class="font-body-md text-primary">
+            {% for assignment in assignments %}
+            <tr class="completable-task planner-table-row border-b border-outline-variant/10 transition-colors"
+                data-task-id="assignment-{{ assignment.id }}"
+                data-task-title="{{ assignment.title|e }}"
+                data-deadline="{{ assignment.deadline }}"
+                data-difficulty="{{ assignment.difficulty }}"
+                data-size="{{ assignment.size }}"
+                data-remove-on-complete="true">
+                <td class="task-title px-xl py-lg font-medium">{{ assignment.title }}</td>
+                <td class="px-xl py-lg text-on-surface-variant">{{ assignment.deadline }}</td>
+                <td class="px-xl py-lg">
+                    <span class="task-status px-md py-1 rounded-full text-xs font-bold {% if assignment.status|default('Pending') in ['Done', 'Completed'] %}bg-tertiary-fixed text-on-tertiary-fixed{% else %}bg-secondary-fixed text-on-secondary-fixed{% endif %}">
+                        {{ assignment.status|default('Pending') }}
+                    </span>
+                </td>
+                <td class="px-xl py-lg text-right">
+                    <button type="button" class="done-task-btn mr-md">
+                        <span class="material-symbols-outlined">check</span>
+                        Done
+                    </button>
+                    <form action="{{ url_for('assignment.delete_assignment', assignment_id=assignment.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this assignment?')">
+                        <button type="submit" class="text-error hover:text-error-container transition-colors">
+                            <span class="material-symbols-outlined" data-icon="delete">delete</span>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td class="px-xl py-lg" colspan="4">No assignments available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleSection(event) {
+    const card = event.currentTarget.closest('div.border');
+    if (!card) return;
+    const details = card.querySelector('.section-details');
+    if (!details) return;
+    details.classList.toggle('hidden');
+    const icon = card.querySelector('.material-symbols-outlined');
+    if (icon) {
+        icon.textContent = details.classList.contains('hidden') ? 'expand_more' : 'expand_less';
+    }
+}
+</script>
+{% endblock %}

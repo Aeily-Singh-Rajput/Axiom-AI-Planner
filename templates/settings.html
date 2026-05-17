@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings | Axiom AI Planner{% endblock %}
+
+{% block content %}
+<div class="space-y-xl">
+    <section class="bg-surface-container-low rounded-3xl p-xl shadow-sm border border-outline-variant/20">
+        <div class="flex flex-col gap-lg">
+            <div>
+                <h1 class="font-headline-lg text-headline-lg text-primary">Settings</h1>
+                <p class="text-on-surface-variant">Update your preferences and profile details.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+                <div class="bg-surface p-lg rounded-3xl border border-outline-variant/20">
+                    <h2 class="font-headline-md text-headline-md text-primary mb-md">Profile Picture</h2>
+                    {% if settings.profile_picture %}
+                        <img src="{{ settings.profile_picture }}" alt="Profile Picture" class="w-32 h-32 rounded-full mb-lg object-cover">
+                    {% endif %}
+                    <form action="{{ url_for('settings.upload_profile') }}" method="post" enctype="multipart/form-data" class="space-y-md">
+                        <input type="file" name="profile_picture" accept="image/*" class="block w-full text-sm text-on-surface-variant" />
+                        <button type="submit" class="bg-primary text-on-primary py-md px-xl rounded-xl hover:bg-[#6F4E37] transition-colors">Upload</button>
+                    </form>
+                </div>
+                <div class="bg-surface p-lg rounded-3xl border border-outline-variant/20">
+                    <h2 class="font-headline-md text-headline-md text-primary mb-md">Notifications</h2>
+                    <form action="{{ url_for('settings.update_settings') }}" method="post" class="space-y-lg">
+                        <label class="flex items-center gap-md">
+                            <input type="checkbox" name="notifications_enabled" {% if settings.notifications_enabled %}checked{% endif %} class="form-input-focus" />
+                            <span class="text-on-surface">Enable in-app notifications</span>
+                        </label>
+                        <label class="flex items-center gap-md">
+                            <input type="checkbox" name="email_notifications" {% if settings.email_notifications %}checked{% endif %} class="form-input-focus" />
+                            <span class="text-on-surface">Enable email notifications</span>
+                        </label>
+                        <div class="space-y-xs">
+                            <label for="theme" class="font-label-sm text-on-surface-variant uppercase tracking-wider">Theme</label>
+                            <select name="theme" id="theme" class="w-full p-md bg-surface border border-outline-variant rounded-lg form-input-focus">
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="bg-secondary text-on-secondary py-md px-xl rounded-xl hover:bg-secondary-container transition-colors">Save Settings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <section class="bg-surface-container-high p-lg rounded-3xl border border-error-container text-error">
+                {% for message in messages %}
+                    <p class="font-body-md">{{ message }}</p>
+                {% endfor %}
+            </section>
+        {% endif %}
+    {% endwith %}
+
+    <div>
+        <a href="{{ url_for('dashboard.index') }}" class="font-semibold text-secondary hover:text-primary transition-colors">Back to Dashboard</a>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+  // Sync form choice visibility state on settings panel load
+  document.addEventListener("DOMContentLoaded", () => {
+    const themeSelect = document.getElementById('theme');
+    const isDark = document.documentElement.classList.contains('dark');
+    themeSelect.value = isDark ? 'dark' : 'light';
+
+    // Hook change updates straight to local browser configurations
+    themeSelect.addEventListener('change', (e) => {
+      if (e.target.value === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+        localStorage.setItem('axiom-theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+        localStorage.setItem('axiom-theme', 'light');
+      }
+    });
+  });
+</script>
+{% endblock %}
