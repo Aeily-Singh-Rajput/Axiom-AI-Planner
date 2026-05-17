@@ -4,12 +4,14 @@ Entry point for the app. Registers all routes.
 """
 
 import os
-from dotenv import load_dotenv
-load_dotenv()
 import sys
 from flask import Flask
+from dotenv import load_dotenv
 
-# Ensure the project root is on sys.path when running the app as a script
+# Load local .env only for development
+load_dotenv()
+
+# Ensure project root is on sys.path
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
@@ -22,9 +24,10 @@ from routes.upload_routes import upload_bp
 from routes.settings_routes import settings_bp
 
 app = Flask(__name__)
-app.secret_key = "axiom_planner_secret"  # Change this in production
 
-# Register Blueprints (modular routes)
+app.secret_key = os.getenv("SECRET_KEY", "dev_fallback_secret")
+
+# Register Blueprints
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(assignment_bp)
 app.register_blueprint(exam_bp)
@@ -33,4 +36,5 @@ app.register_blueprint(upload_bp)
 app.register_blueprint(settings_bp)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # IMPORTANT for Railway
+    app.run(host="0.0.0.0", port=port, debug=False)
