@@ -4,13 +4,13 @@ Distributes assignments across available days.
 Reduces workload automatically when an exam is near.
 
 Logic:
-  workload = difficulty × size
-  daily_work = workload ÷ available_days
-  If exam within 3 days → reduce daily work by 50%
+workload = difficulty × size
+daily_work = workload ÷ available_days
+If exam within 3 days → reduce daily work by 50%
 """
 
 from datetime import datetime, timedelta
-from axiom_planner.modules.data_manager import filter_active_tasks
+from modules.data_manager import filter_active_tasks
 
 
 def _days_until(date_str):

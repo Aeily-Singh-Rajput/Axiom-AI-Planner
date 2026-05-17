@@ -4,8 +4,8 @@ Handles adding and deleting exams.
 """
 
 from flask import Blueprint, request, redirect, url_for
-from axiom_planner.modules.data_manager import load_exams, save_exams
-from axiom_planner.modules.study_plan_cache import invalidate_cached_study_plan
+from modules.data_manager import load_exams, save_exams
+from modules.study_plan_cache import invalidate_cached_study_plan
 import uuid
 
 exam_bp = Blueprint("exam", __name__)

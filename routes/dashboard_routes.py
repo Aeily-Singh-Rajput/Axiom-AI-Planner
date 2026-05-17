@@ -2,13 +2,12 @@
 Dashboard Routes
 Handles the main dashboard page rendering.
 """
-
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for
-from axiom_planner.modules.data_manager import filter_active_tasks, load_assignments, load_exams, load_settings, save_assignments, save_exams
-from axiom_planner.modules.scheduler import generate_schedule
-from axiom_planner.modules.stress_calculator import calculate_stress
-from axiom_planner.modules.ai_summarizer import generate_study_plan, parse_study_plan_text
-from axiom_planner.modules.study_plan_cache import (
+from modules.data_manager import filter_active_tasks, load_assignments, load_exams, load_settings, save_assignments, save_exams
+from modules.scheduler import generate_schedule
+from modules.stress_calculator import calculate_stress
+from modules.ai_summarizer import generate_study_plan, parse_study_plan_text
+from modules.study_plan_cache import (
     build_study_plan_signature,
     get_cached_study_plan,
     invalidate_cached_study_plan,

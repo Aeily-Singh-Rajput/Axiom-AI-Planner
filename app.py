@@ -14,12 +14,12 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from axiom_planner.routes.dashboard_routes import dashboard_bp
-from axiom_planner.routes.assignment_routes import assignment_bp
-from axiom_planner.routes.exam_routes import exam_bp
-from axiom_planner.routes.scheduler_routes import scheduler_bp
-from axiom_planner.routes.upload_routes import upload_bp
-from axiom_planner.routes.settings_routes import settings_bp
+from routes.dashboard_routes import dashboard_bp
+from routes.assignment_routes import assignment_bp
+from routes.exam_routes import exam_bp
+from routes.scheduler_routes import scheduler_bp
+from routes.upload_routes import upload_bp
+from routes.settings_routes import settings_bp
 
 app = Flask(__name__)
 app.secret_key = "axiom_planner_secret"  # Change this in production

@@ -4,7 +4,7 @@ Handles user settings, profile picture, and notifications.
 """
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from axiom_planner.modules.data_manager import filter_active_tasks, load_settings, save_settings, load_assignments, load_exams
+from modules.data_manager import filter_active_tasks, load_settings, save_settings, load_assignments, load_exams
 import os
 from werkzeug.utils import secure_filename
 

@@ -5,10 +5,10 @@ Handles PDF upload, text extraction, and AI summarization.
 
 import os
 from flask import Blueprint, request, redirect, url_for, render_template, flash
-from axiom_planner.modules.pdf_extractor import extract_text_from_pdf
-from axiom_planner.modules.ai_summarizer import summarize_text
-from axiom_planner.modules.data_manager import filter_active_tasks, load_assignments, save_assignments, load_exams
-from axiom_planner.modules.study_plan_cache import invalidate_cached_study_plan
+from modules.pdf_extractor import extract_text_from_pdf
+from modules.ai_summarizer import summarize_text
+from modules.data_manager import filter_active_tasks, load_assignments, save_assignments, load_exams
+from modules.study_plan_cache import invalidate_cached_study_plan
 
 upload_bp = Blueprint("upload", __name__)
 

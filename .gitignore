@@ -29,3 +29,6 @@ Thumbs.db
 
 # Temporary files
 *.tmp
+
+# Project data (IMPORTANT - user/session data)
+data/

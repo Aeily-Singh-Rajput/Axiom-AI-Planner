@@ -10,7 +10,7 @@ import os
 import re
 from datetime import datetime
 from openai import OpenAI
-from axiom_planner.modules.data_manager import filter_active_tasks
+from modules.data_manager import filter_active_tasks
 
 # =========================
 # GROQ KEY ROTATION CONFIG

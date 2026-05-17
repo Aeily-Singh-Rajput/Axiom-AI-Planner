@@ -2,7 +2,7 @@ import hashlib
 import json
 import os
 from flask import has_request_context
-from axiom_planner.modules.data_manager import _get_filepath, _read_json, _write_json
+from modules.data_manager import _get_filepath, _read_json, _write_json
 
 
 CACHE_FILENAME = "study_plan_cache.json"

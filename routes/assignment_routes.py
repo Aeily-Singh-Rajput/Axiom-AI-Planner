@@ -4,8 +4,8 @@ Handles adding and deleting assignments.
 """
 
 from flask import Blueprint, request, redirect, url_for
-from axiom_planner.modules.data_manager import load_assignments, save_assignments
-from axiom_planner.modules.study_plan_cache import invalidate_cached_study_plan
+from modules.data_manager import load_assignments, save_assignments
+from modules.study_plan_cache import invalidate_cached_study_plan
 import uuid
 from datetime import datetime
 

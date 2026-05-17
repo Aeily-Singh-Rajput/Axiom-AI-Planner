@@ -5,7 +5,7 @@ overlap, overdue work, and completion all move the result in predictable ways.
 """
 
 from datetime import datetime
-from axiom_planner.modules.data_manager import is_completed_task
+from modules.data_manager import is_completed_task
 
 
 def _days_until(date_str):
